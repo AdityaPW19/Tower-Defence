@@ -10,7 +10,6 @@ export class QuestionManager extends StoreBase {
 	questions: any[] = mockQuestions.slice();
 	questionQueue: any[] = [];
 	isLoadingQuestions = false;
-	fetchPromise: Promise<void> | null = null;
 
 	currentQuestion: any = null;
 	isActive = false;
@@ -48,29 +47,24 @@ export class QuestionManager extends StoreBase {
 		}
 	}
 
-	fetchQuestions() {
+	async fetchQuestions() {
 		if (this.isLoadingQuestions) return;
 		this.isLoadingQuestions = true;
 		this.emitChange();
 
-		const doFetch = async () => {
-			try {
-				const response: any = await gameBridge.getQuestions(5).catch(() => null);
-				if (response && response.questions) {
-					const adapted = response.questions.map((q: any) => this.adaptBridgeQuestion(q));
-					this.questionQueue.push(...adapted);
-					console.log(`[QuestionManager] Fetched ${adapted.length} questions. Queue size: ${this.questionQueue.length}`);
-				}
-			} catch (e) {
-				console.warn('[QuestionManager] Failed to fetch questions (using mocks)', e);
-			} finally {
-				this.isLoadingQuestions = false;
-				this.fetchPromise = null;
-				this.emitChange();
+		try {
+			const response: any = await gameBridge.getQuestions(5).catch(() => null);
+			if (response && response.questions) {
+				const adapted = response.questions.map((q: any) => this.adaptBridgeQuestion(q));
+				this.questionQueue.push(...adapted);
+				console.log(`[QuestionManager] Fetched ${adapted.length} questions. Queue size: ${this.questionQueue.length}`);
 			}
-		};
-
-		this.fetchPromise = doFetch();
+		} catch (e) {
+			console.warn('[QuestionManager] Failed to fetch questions (using mocks)', e);
+		} finally {
+			this.isLoadingQuestions = false;
+			this.emitChange();
+		}
 	}
 
 	adaptBridgeQuestion(bq: any) {
@@ -117,8 +111,6 @@ export class QuestionManager extends StoreBase {
 		this.buildPoints = 0;
 		this.gameTimeSinceLastQuestion = GameConfig.questionInterval * 0.75;
 		this.currentQuestion = null;
-		this.questionQueue = [];
-		this.fetchPromise = null;
 		this.emitChange();
 	}
 
@@ -136,12 +128,8 @@ export class QuestionManager extends StoreBase {
 		this.emitChange();
 	}
 
-	async triggerQuestion() {
+	triggerQuestion() {
 		let questionToUse: any = null;
-
-		if (this.questionQueue.length === 0 && this.fetchPromise) {
-			await this.fetchPromise;
-		}
 
 		if (this.questionQueue.length > 0) {
 			questionToUse = this.questionQueue.shift();

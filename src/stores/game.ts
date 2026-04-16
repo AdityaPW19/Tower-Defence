@@ -33,6 +33,9 @@ export class Game {
 
 		// Reset question manager
 		questionManager.reset();
+		if (questionManager.questionQueue.length < 3) {
+			questionManager.fetchQuestions();
+		}
 
 		// Start the game loop
 		gameLoop?.start(this.update);
