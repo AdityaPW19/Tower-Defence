@@ -1,13 +1,4 @@
-/* Font Face */
-@font-face {
-	font-family: 'Astro Space';
-	src:
-		url('/font/AstroSpace-0Wl3o.otf') format('opentype'),
-		url('/font/AstroSpace-0Wl3o.ttf') format('truetype');
-	font-weight: 200;
-	font-style: normal;
-	font-display: swap;
-}
+/* Font Face - loaded dynamically via JavaScript for proper base URL handling */
 
 /* Global styles matching Svelte version */
 * {
@@ -1635,7 +1626,6 @@ html, body {
 /* Effects */
 .explosion-effect {
 	position: absolute;
-	background-image: url('/sprites/explosion-anim-sprite.png');
 	background-repeat: no-repeat;
 	pointer-events: none;
 	z-index: 25;
@@ -1646,7 +1636,6 @@ html, body {
 
 .smoke-effect {
 	position: absolute;
-	background-image: url('/sprites/smoke-anim-sprite.png');
 	background-repeat: no-repeat;
 	pointer-events: none;
 	z-index: 20;

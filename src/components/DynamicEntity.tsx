@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { screen } from '../stores/Screen';
 import { getAnimation } from '../config/animations';
+import { resolvePath } from '../utils/paths';
 
 interface DynamicEntityProps {
 	entity: any;
@@ -41,7 +42,7 @@ const DynamicEntity: React.FC<DynamicEntityProps> = ({ entity, zIndex = 5 }) => 
 				transform,
 				zIndex
 			}}
-			src={frame}
+			src={resolvePath(frame)}
 			alt={entity.name}
 			onLoad={() => setImageLoaded(true)}
 		/>

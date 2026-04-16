@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { resolvePath } from '../../utils/paths';
 
 interface ExplosionProps {
 	entity: any;
@@ -39,7 +40,8 @@ const Explosion: React.FC<ExplosionProps> = ({ entity }) => {
 			style={{
 				width: `${frameWidth}px`,
 				height: `${frameHeight}px`,
-				backgroundPosition: `-${bgX}px -${bgY}px`
+				backgroundPosition: `-${bgX}px -${bgY}px`,
+				backgroundImage: `url(${resolvePath('/sprites/explosion-anim-sprite.png')})`
 			}}
 		/>
 	);

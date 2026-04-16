@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { screen } from '../stores/Screen';
 import { Vector2 } from '../stores/Vector2';
 import { getAnimation } from '../config/animations';
+import { resolvePath } from '../utils/paths';
 import Effect from './Effect';
 
 interface StaticEntityProps {
@@ -43,7 +44,7 @@ const StaticEntity: React.FC<StaticEntityProps> = ({ entity, onClick, style }) =
 					pointerEvents: onClick ? 'auto' : 'none',
 					...style
 				}}
-				src={frame}
+				src={resolvePath(frame)}
 				alt={entity.name}
 				onClick={onClick}
 				onLoad={() => setImageLoaded(true)}

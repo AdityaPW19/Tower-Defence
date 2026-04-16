@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import MenuLayout from './MenuLayout';
 import Button from './Button';
 import HowToPlay from './HowToPlay';
+import { resolvePath } from '../utils/paths';
 
 interface StartScreenProps {
 	onStart: () => void;
@@ -17,10 +18,10 @@ const StartScreen: React.FC<StartScreenProps> = ({ onStart, preloaded, preloadPe
 	return (
 		<MenuLayout>
 			<div className="start-content">
-				<img src="/logos/knowledge-space2.png" alt="Knowledge Space" className="logo-image" />
+				<img src={resolvePath('/logos/knowledge-space2.png')} alt="Knowledge Space" className="logo-image" />
 				
 				<div className="star-container">
-					<img src="/enemies/enemies-riding-art.png" alt="Shooting Star" className="shooting-star-art" />
+					<img src={resolvePath('/enemies/enemies-riding-art.png')} alt="Shooting Star" className="shooting-star-art" />
 				</div>
 
 				<div className="hints">
