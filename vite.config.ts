@@ -9,6 +9,7 @@ export default defineConfig({
   plugins: [react()],
   // Vite will serve files from `publicDir` at the site root (/)
   publicDir: repoStatic,
+  base: '/Tower-Defence/',
   server: {
     port: 5173,
     fs: {
