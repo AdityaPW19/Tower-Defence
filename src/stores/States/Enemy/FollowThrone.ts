@@ -1,0 +1,27 @@
+import { BaseState } from '../../BaseState';
+import { angleToTarget, getDirectionFromAngle } from '../../../utils/math';
+
+export class FollowThrone extends BaseState {
+	lastAngle = 0;
+
+	update(deltaTime: number) {
+		this.follow(deltaTime);
+	}
+
+	follow(deltaTime: number) {
+		const { throne } = this.stateMachine.context;
+		if (!throne || !throne.width || (throne.position.x === 0 && throne.position.y === 0)) {
+			return;
+		}
+
+		const targetCenter = throne.position;
+
+		this.entity.rotation = angleToTarget(this.entity.position, targetCenter);
+
+		const direction = getDirectionFromAngle(this.entity.rotation);
+
+		const velocity = direction.multiply(this.entity.stats.speed * deltaTime);
+
+		this.entity.position = this.entity.position.add(velocity);
+	}
+}

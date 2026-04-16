@@ -1,0 +1,56 @@
+<!-- examples/simple-game.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Game Example</title>
+</head>
+<body>
+    <h1>My Game</h1>
+    <div id="status">Loading...</div>
+    <div id="content"></div>
+    <button id="answerBtn" style="display:none;" onclick="submitFakeAnswer()">Submit Answer</button>
+
+    <!-- Include the bridge as a module -->
+    <script type="module">
+        import GameBridge from '../src/index.js';
+
+        const statusDiv = document.getElementById('status');
+        const contentDiv = document.getElementById('content');
+        const answerBtn = document.getElementById('answerBtn');
+        let currentQuestion = null;
+
+        // Start initialization
+        GameBridge.init().then(config => {
+            statusDiv.innerText = `Initialized! User: ${config.user.name}, Level: ${config.config.level}`;
+            loadQuestions();
+        }).catch(err => {
+            statusDiv.innerText = "Error: " + err.message;
+        });
+
+        function loadQuestions() {
+            GameBridge.getQuestions(1).then(data => {
+                if (data.questions && data.questions.length > 0) {
+                    currentQuestion = data.questions[0];
+                    contentDiv.innerText = `Question: ${currentQuestion.content.text}`;
+                    answerBtn.style.display = 'block';
+                } else {
+                    contentDiv.innerText = "No questions received.";
+                }
+            });
+        }
+
+        // Expose function for the button (since module scope is local)
+        window.submitFakeAnswer = function() {
+            if (!currentQuestion) return;
+            
+            GameBridge.submitAnswer(currentQuestion.uuid, true, 5).then(() => {
+                alert("Answer Submitted!");
+                GameBridge.levelComplete(100, 3);
+            });
+        };
+
+    </script>
+</body>
+</html>
