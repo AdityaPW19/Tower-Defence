@@ -16,5 +16,13 @@ export default defineConfig({
       // Allow serving files from the repo static folder (outside project root)
       allow: [repoStatic, process.cwd()]
     }
+  },
+  esbuild: {
+    // Use this project's tsconfig, not the parent
+    tsconfigRaw: {
+      compilerOptions: {
+        jsx: 'react-jsx'
+      }
+    }
   }
 });
