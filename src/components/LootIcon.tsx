@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 
 interface LootIconProps {
 	width?: number;
@@ -46,4 +46,4 @@ const LootIcon: React.FC<LootIconProps> = ({ width = 40, height = 40 }) => {
 	);
 };
 
-export default LootIcon;
+export default memo(LootIcon);

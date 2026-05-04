@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { managers } from '../stores/managers';
 import { lootTracker } from '../stores/LootTracker';
 import DynamicEntity from './DynamicEntity';
@@ -7,16 +7,23 @@ import ParticleLayer from './ParticleLayer';
 import HealthBar from './HealthBar';
 
 const GameArea: React.FC = () => {
-	const [entities, setEntities] = useState<any[]>([]);
-	const [throne, setThrone] = useState<any>(null);
+	const [, forceTick] = useState(0);
+	const entitiesRef = useRef<any[]>([]);
+	const throneRef = useRef<any>(null);
+	const lastEntitiesRef = useRef<any[] | null>(null);
 
 	useEffect(() => {
 		let rafId: number;
 		const tick = () => {
 			const entityManager = managers.get('entityManager');
 			if (entityManager) {
-				setEntities([...entityManager.entities]);
-				setThrone(entityManager.throne);
+				const currentEntities = entityManager.entities;
+				if (currentEntities !== lastEntitiesRef.current) {
+					lastEntitiesRef.current = currentEntities;
+					entitiesRef.current = currentEntities.slice();
+					throneRef.current = entityManager.throne;
+				}
+				forceTick((n) => (n + 1) & 0xffff);
 			}
 			rafId = requestAnimationFrame(tick);
 		};
@@ -24,18 +31,47 @@ const GameArea: React.FC = () => {
 		return () => cancelAnimationFrame(rafId);
 	}, []);
 
-	const handleTowerClick = useCallback((tower: any) => (e: React.MouseEvent) => {
-		e.stopPropagation();
-		if (tower.upgradeLevel === 2 || !tower.isUpgradable) return;
-		lootTracker.spendLoot({ type: 'upgrade', payload: { tower } });
-	}, []);
+	const handleTowerClick = useCallback(
+		(tower: any) => (e: React.MouseEvent) => {
+			e.stopPropagation();
+			if (tower.upgradeLevel === 2 || !tower.isUpgradable) return;
+			lootTracker.spendLoot({ type: 'upgrade', payload: { tower } });
+		},
+		[]
+	);
 
-	const loot = entities.filter(e => e.type === 'loot');
-	const projectiles = entities.filter(e => e.type === 'projectile');
-	const enemies = entities.filter(e => e.type === 'enemy');
-	const towers = entities.filter(e => e.type === 'tower');
-	const topTowers = towers.slice(0, 2);
-	const bottomTowers = towers.slice(2);
+	const entities = entitiesRef.current;
+	const throne = throneRef.current;
+
+	const { loot, projectiles, enemies, topTowers, bottomTowers } = useMemo(() => {
+		const loot: any[] = [];
+		const projectiles: any[] = [];
+		const enemies: any[] = [];
+		const towers: any[] = [];
+		for (const e of entities) {
+			switch (e.type) {
+				case 'loot':
+					loot.push(e);
+					break;
+				case 'projectile':
+					projectiles.push(e);
+					break;
+				case 'enemy':
+					enemies.push(e);
+					break;
+				case 'tower':
+					towers.push(e);
+					break;
+			}
+		}
+		return {
+			loot,
+			projectiles,
+			enemies,
+			topTowers: towers.slice(0, 2),
+			bottomTowers: towers.slice(2)
+		};
+	}, [entities]);
 
 	return (
 		<section className="game-area">

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import Bg1 from './backgrounds/Bg1';
 import Bg2 from './backgrounds/Bg2';
 import Bg3 from './backgrounds/Bg3';
@@ -20,4 +20,4 @@ const BackgroundContainer: React.FC<BackgroundContainerProps> = ({ stageNumber }
 	);
 };
 
-export default BackgroundContainer;
+export default memo(BackgroundContainer);

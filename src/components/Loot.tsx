@@ -10,19 +10,24 @@ const Loot: React.FC = () => {
 
 	useEffect(() => {
 		let rafId: number;
-		
+		let lastLoot = lootTracker.collectedLoot;
+
 		const tick = () => {
-			setCollectedLoot(lootTracker.collectedLoot);
-			
+			const nextLoot = lootTracker.collectedLoot;
+			if (nextLoot !== lastLoot) {
+				lastLoot = nextLoot;
+				setCollectedLoot(nextLoot);
+			}
+
 			const shouldAnimate = lootTracker.playLowLootAnimation;
 			if (shouldAnimate && !prevAnimationRef.current) {
 				setIsAnimated(true);
 			}
 			prevAnimationRef.current = shouldAnimate;
-			
+
 			rafId = requestAnimationFrame(tick);
 		};
-		
+
 		tick();
 		return () => cancelAnimationFrame(rafId);
 	}, []);

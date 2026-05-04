@@ -80,9 +80,25 @@ export class Game {
 
 		try {
 			const gameLoop = managers.get('gameLoop');
-			if (gameLoop) gameLoop.stop();
+			if (gameLoop) {
+				gameLoop.stop();
+				gameLoop.reset();
+			}
 		} catch (e) {
 			// ignore
+		}
+
+		const stageManager = managers.get('stageManager');
+		entityManager?.reset?.();
+		lootTracker?.reset?.();
+		questionManager?.reset?.();
+		particleManager?.reset?.();
+		if (stageManager) {
+			stageManager.stageNumber = 0;
+			stageManager.stageResult = '';
+			stageManager.stageStartTime = 0;
+			stageManager.commonSpawnCd = null;
+			stageManager.eliteSpawnCd = null;
 		}
 
 		this.isStarted = false;

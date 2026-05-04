@@ -92,17 +92,28 @@ html, body {
 	position: absolute;
 	top: 20px;
 	right: 20px;
+	height: 48px;
+	width: 48px;
 	border: none;
-	font-size: 16px;
 	background: none;
 	z-index: 10;
 	-webkit-tap-highlight-color: transparent;
 	user-select: none;
 	-webkit-touch-callout: none;
 	cursor: pointer;
-	padding: 8px;
-	opacity: 0.8;
+	padding: 0;
+	opacity: 0.85;
 	transition: opacity 0.2s;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	line-height: 0;
+}
+
+.btn-pause svg {
+	width: 100%;
+	height: 100%;
+	display: block;
 }
 
 .btn-pause:hover {
@@ -210,7 +221,6 @@ html, body {
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
-	gap: -10px;
 }
 
 /* Entities */
@@ -240,12 +250,27 @@ html, body {
 	overflow: hidden;
 }
 
-/* Health Bar */
+/* Health Bar — overlay anchored to .game-area, positioned just below the castle.
+   IMPORTANT: do NOT make .throne `position: relative` — StaticEntity reads
+   offsetParent.getBoundingClientRect() to compute throne's world-space position,
+   so .throne must remain unpositioned (offsetParent stays the .window-wrapper). */
 .health-bar-container {
-	height: 24px;
+	position: absolute;
+	left: 50%;
+	transform: translateX(-50%);
+	top: calc(50% + 90px);
+	height: 15px;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
+	pointer-events: none;
+	z-index: 2;
+}
+
+@media (min-width: 769px) {
+	.health-bar-container {
+		top: calc(50% + 130px);
+	}
 }
 
 .health-bar-background {
@@ -1079,14 +1104,28 @@ html, body {
 .loot {
 	position: absolute;
 	top: 20px;
-	left: 10px;
-	color: white;
-	font-size: 34px;
+	left: 20px;
+	height: 48px;
+	font-size: 32px;
+	font-weight: 600;
 	z-index: 10;
 	color: rgba(214, 133, 218);
-	display: flex;
+	display: inline-flex;
 	align-items: center;
-	gap: 5px;
+	gap: 10px;
+	line-height: 1;
+}
+
+.loot svg {
+	width: 40px;
+	height: 40px;
+	flex-shrink: 0;
+}
+
+.loot span {
+	display: inline-flex;
+	align-items: center;
+	line-height: 1;
 }
 
 .loot.isAnimated {
@@ -1144,7 +1183,8 @@ html, body {
 	margin: 0;
 }
 
-.pause-content .buttons-container {
+.pause-content .buttons-container,
+.winlose-content .buttons-container {
 	display: flex;
 	flex-direction: column;
 	gap: 1.5rem;
@@ -1676,13 +1716,18 @@ html, body {
 		height: 100dvh;
 	}
 
+	/* Mobile: give the playfield room above the HUD and below the Star Transmit bar.
+	   Padding only (no scale changes) so collision boxes & game mechanics stay identical. */
 	.game-area {
 		margin-top: 0;
-		justify-content: end;
+		justify-content: center;
+		padding-top: 72px;
+		padding-bottom: 96px;
+		box-sizing: border-box;
 	}
 
 	.towers {
-		gap: 60px;
+		gap: 50px;
 	}
 
 	.grid-overlay {
@@ -1742,8 +1787,10 @@ html, body {
 		max-height: 180px;
 	}
 
+	/* Mobile: throne renders smaller (scale 0.7), so anchor the health bar overlay
+	   closer to the throne's visual center. */
 	.health-bar-container {
-		bottom: 40px;
+		top: calc(50% + 60px);
 	}
 
 	/* Mobile: Star Transmit / Indicator */
@@ -1811,6 +1858,27 @@ html, body {
 		display: none;
 	}
 
+	/* Mobile: Top HUD (coins + pause) inline & compact */
+	.loot {
+		top: 14px;
+		left: 14px;
+		height: 40px;
+		font-size: 26px;
+		gap: 8px;
+	}
+
+	.loot svg {
+		width: 32px;
+		height: 32px;
+	}
+
+	.btn-pause {
+		top: 14px;
+		right: 14px;
+		width: 40px;
+		height: 40px;
+	}
+
 	/* Mobile: Pause Screen */
 	.pause-title h1 {
 		font-size: 2.5rem;
@@ -1848,5 +1916,22 @@ html, body {
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
+	}
+
+	/* Compact-phone HUD tweaks */
+	.loot {
+		height: 39px;
+		font-size: 22px;
+		gap: 7px;
+	}
+
+	.loot svg {
+		width: 28px;
+		height: 28px;
+	}
+
+	.btn-pause {
+		width: 42px;
+		height: 42px;
 	}
 }

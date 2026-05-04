@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 
 interface TowerShootProps {
 	entity: any;
@@ -50,4 +50,4 @@ const TowerShoot: React.FC<TowerShootProps> = ({ entity }) => {
 	);
 };
 
-export default TowerShoot;
+export default memo(TowerShoot);

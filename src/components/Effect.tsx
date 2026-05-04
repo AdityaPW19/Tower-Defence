@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import * as Effects from './effects';
 
 interface EffectProps {
@@ -17,4 +17,4 @@ const Effect: React.FC<EffectProps> = ({ name, entity }) => {
 	return <EffectComponent entity={entity} />;
 };
 
-export default Effect;
+export default memo(Effect);

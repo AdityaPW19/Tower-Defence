@@ -15,7 +15,7 @@ const DynamicEntity: React.FC<DynamicEntityProps> = ({ entity, zIndex = 5 }) => 
 	const animation = entity.animation ? getAnimation(entity.animation.name) : null;
 	const frame = animation?.frames[entity.animation?.currentFrame || 0] || null;
 
-	const scale = screen.isMobile ? entity.scale - 0.2 : entity.scale;
+	const scale = screen.isMobile ? entity.scale - 0.3 : entity.scale;
 	const translateX = entity.position?.x || 0;
 	const translateY = entity.position?.y || 0;
 	const rotation = entity.rotation || 0;

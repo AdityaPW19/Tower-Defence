@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, memo } from 'react';
 import { soundManager } from '../stores/soundManager';
 
 interface BlinkingStarProps {
@@ -25,4 +25,4 @@ const BlinkingStar: React.FC<BlinkingStarProps> = ({ x, y }) => {
 	);
 };
 
-export default BlinkingStar;
+export default memo(BlinkingStar);

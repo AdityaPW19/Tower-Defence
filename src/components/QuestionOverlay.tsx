@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { managers } from '../stores/managers';
 import { soundManager } from '../stores/soundManager';
 import { cursor } from '../stores/Cursor';
@@ -17,14 +17,33 @@ const QuestionOverlay: React.FC = () => {
 
 	useEffect(() => {
 		let rafId: number;
+		let lastIsActive: boolean | null = null;
+		let lastQuestion: any = null;
+		let lastStrikes = -1;
+		let lastProgress = -1;
+
 		const tick = () => {
 			const qm = managers.get('questionManager');
 			if (qm) {
-				setIsActive(qm.isActive);
-				setCurrentQuestion(qm.currentQuestion);
-				setStrikes(qm.strikes);
+				if (qm.isActive !== lastIsActive) {
+					lastIsActive = qm.isActive;
+					setIsActive(qm.isActive);
+				}
+				if (qm.currentQuestion !== lastQuestion) {
+					lastQuestion = qm.currentQuestion;
+					setCurrentQuestion(qm.currentQuestion);
+				}
+				if (qm.strikes !== lastStrikes) {
+					lastStrikes = qm.strikes;
+					setStrikes(qm.strikes);
+				}
 				if (qm.initialTimer > 0) {
-					setProgress((qm.timer / qm.initialTimer) * 100);
+					const nextProgress = (qm.timer / qm.initialTimer) * 100;
+					const rounded = Math.round(nextProgress * 10) / 10;
+					if (rounded !== lastProgress) {
+						lastProgress = rounded;
+						setProgress(rounded);
+					}
 				}
 			}
 			rafId = requestAnimationFrame(tick);
@@ -55,20 +74,20 @@ const QuestionOverlay: React.FC = () => {
 		prevIsActiveRef.current = isActive;
 	}, [isActive, currentQuestion, animationPhase]);
 
-	const handleAnswer = (index: number) => {
+	const handleAnswer = useCallback((index: number) => {
 		soundManager.play('clickMenu', true);
 		const qm = managers.get('questionManager');
 		qm?.answer(index);
-	};
+	}, []);
 
-	const toggleHint = () => {
+	const toggleHint = useCallback(() => {
 		soundManager.play('clickMenu', true);
-		setShowHint(!showHint);
-	};
+		setShowHint(prev => !prev);
+	}, []);
 
-	const handleVideoCanPlay = () => {
+	const handleVideoCanPlay = useCallback(() => {
 		setVideoLoaded(true);
-	};
+	}, []);
 
 	if (!isActive || !currentQuestion) return null;
 

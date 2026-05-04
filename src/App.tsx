@@ -62,19 +62,45 @@ export default function App() {
 
 	useEffect(() => {
 		let rafId: number;
+		let lastIsStarted = game.isStarted;
+		let lastIsPaused = false;
+		let lastStageResult = '';
+		let lastStageNumber = 0;
+		let lastIsQuestionActive = false;
+
 		const tick = () => {
-			setIsStarted(game.isStarted);
-			
+			const nextIsStarted = game.isStarted;
+			if (nextIsStarted !== lastIsStarted) {
+				lastIsStarted = nextIsStarted;
+				setIsStarted(nextIsStarted);
+			}
+
 			const gameLoop = managers.get('gameLoop');
-			setIsPaused(!!gameLoop?.pauseState);
-			
+			const nextIsPaused = !!gameLoop?.pauseState;
+			if (nextIsPaused !== lastIsPaused) {
+				lastIsPaused = nextIsPaused;
+				setIsPaused(nextIsPaused);
+			}
+
 			const stageManager = managers.get('stageManager');
-			setStageResult(stageManager?.stageResult || '');
-			setStageNumber(stageManager?.stageNumber || 0);
-			
+			const nextStageResult = stageManager?.stageResult || '';
+			if (nextStageResult !== lastStageResult) {
+				lastStageResult = nextStageResult;
+				setStageResult(nextStageResult);
+			}
+			const nextStageNumber = stageManager?.stageNumber || 0;
+			if (nextStageNumber !== lastStageNumber) {
+				lastStageNumber = nextStageNumber;
+				setStageNumber(nextStageNumber);
+			}
+
 			const questionManager = managers.get('questionManager');
-			setIsQuestionActive(questionManager?.isActive || false);
-			
+			const nextIsQuestionActive = questionManager?.isActive || false;
+			if (nextIsQuestionActive !== lastIsQuestionActive) {
+				lastIsQuestionActive = nextIsQuestionActive;
+				setIsQuestionActive(nextIsQuestionActive);
+			}
+
 			rafId = requestAnimationFrame(tick);
 		};
 		tick();

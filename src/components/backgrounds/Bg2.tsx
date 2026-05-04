@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 
 const Bg2: React.FC = () => {
 	return (
@@ -9,4 +9,4 @@ const Bg2: React.FC = () => {
 	);
 };
 
-export default Bg2;
+export default memo(Bg2);

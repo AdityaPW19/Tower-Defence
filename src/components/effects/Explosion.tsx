@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, memo } from 'react';
 import { resolvePath } from '../../utils/paths';
 
 interface ExplosionProps {
@@ -47,4 +47,4 @@ const Explosion: React.FC<ExplosionProps> = ({ entity }) => {
 	);
 };
 
-export default Explosion;
+export default memo(Explosion);

@@ -1,9 +1,9 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import MenuLayout from './MenuLayout';
 import Button from './Button';
 import { lootTracker } from '../stores/LootTracker';
-import { managers } from '../stores/managers';
 import { soundManager } from '../stores/soundManager';
+import { game } from '../stores/game';
 import LootIcon from './LootIcon';
 
 interface WinLoseScreenProps {
@@ -17,6 +17,15 @@ const WinLoseScreen: React.FC<WinLoseScreenProps> = ({ result, onRestart }) => {
 		return () => {
 			soundManager.restoreBgVolume();
 		};
+	}, []);
+
+	const handleExit = useCallback(async () => {
+		soundManager.play('clickMenu', true);
+		if (game.cleanup) {
+			await game.cleanup();
+		} else {
+			game.isStarted = false;
+		}
 	}, []);
 
 	return (
@@ -50,7 +59,10 @@ const WinLoseScreen: React.FC<WinLoseScreenProps> = ({ result, onRestart }) => {
 						</div>
 					</div>
 				</div>
-				<Button onClick={onRestart} text="Restart" />
+				<div className="buttons-container">
+					<Button onClick={onRestart} text="Restart" />
+					<Button onClick={handleExit} text="Exit to Menu" />
+				</div>
 			</div>
 		</MenuLayout>
 	);

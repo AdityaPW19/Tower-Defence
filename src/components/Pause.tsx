@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 
 const Pause: React.FC = () => {
 	return (
@@ -35,4 +35,4 @@ const Pause: React.FC = () => {
 	);
 };
 
-export default Pause;
+export default memo(Pause);

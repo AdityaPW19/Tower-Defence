@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, memo } from 'react';
 import { resolvePath } from '../../utils/paths';
 
 interface SmokeProps {
@@ -47,4 +47,4 @@ const Smoke: React.FC<SmokeProps> = ({ entity }) => {
 	);
 };
 
-export default Smoke;
+export default memo(Smoke);

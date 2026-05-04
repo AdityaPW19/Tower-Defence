@@ -18,7 +18,7 @@ const StaticEntity: React.FC<StaticEntityProps> = ({ entity, onClick, style }) =
 	const animation = entity.animation ? getAnimation(entity.animation.name) : null;
 	const frame = animation?.frames[entity.animation?.currentFrame || 0] || null;
 
-	const scale = screen.isMobile ? entity.scale - 0.2 : entity.scale;
+	const scale = screen.isMobile ? entity.scale - 0.3 : entity.scale;
 	const transform = `scale(${scale})`;
 
 	useEffect(() => {
