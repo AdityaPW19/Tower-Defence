@@ -92,10 +92,12 @@ const TowerChanceIndicator: React.FC = () => {
 				<div className="timer-section">
 					<div className="label-row">
 						<span className="label">Star Transmit</span>
-						<span className="status-text">{Math.floor(progress)}%</span>
 					</div>
-					<div className="progress-bar-bg">
-						<div className="progress-bar-fill" style={{ width: `${progress}%` }} />
+					<div className="bar-row">
+						<div className="progress-bar-bg">
+							<div className="progress-bar-fill" style={{ width: `${progress}%` }} />
+						</div>
+						<span className="status-text">{Math.floor(progress)}%</span>
 					</div>
 				</div>
 

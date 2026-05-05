@@ -1,6 +1,7 @@
 import { boundingBoxFromPoint } from '../utils/math';
 import { soundManager } from './soundManager';
 import { managers } from './managers';
+import { screen } from './Screen';
 import { StoreBase } from './storeShim';
 import { Vector2 } from './Vector2';
 
@@ -105,10 +106,12 @@ export class LootTracker extends StoreBase {
 			
 			if (!offset) return;
 
-			// Convert to Vector2 if needed
 			const position = offset instanceof Vector2 ? offset : new Vector2(offset.x, offset.y);
-			const boundingBox = boundingBoxFromPoint(position, 60, 60);
-			const enemies = collisionManager ? collisionManager.filterEnemiesByBounds(boundingBox) : [];
+			// Smaller hit area on mobile where enemies are scaled down (-0.3) and
+			// often touch each other; prevents accidental multi-kills.
+			const hitSize = screen.isMobile ? 36 : 50;
+			const boundingBox = boundingBoxFromPoint(position, hitSize, hitSize);
+			const candidates = collisionManager ? collisionManager.filterEnemiesByBounds(boundingBox) : [];
 
 			if (stageManager && typeof stageManager.spawnEntity === 'function') {
 				stageManager.spawnEntity('ClickExplode', position);
@@ -116,13 +119,26 @@ export class LootTracker extends StoreBase {
 
 			soundManager.play('clickEnemy', true);
 
-			enemies.forEach((enemy: any) => {
-				if (enemy && enemy.state && typeof enemy.state.setState === 'function') {
-					enemy.state.setState('Die');
+			// One click = one kill. Pick the enemy whose VISUAL CENTER is closest to
+			// the tap. entity.position is the top-left of the natural-size image, so
+			// we offset by half width/height to get the actual rendered center.
+			let target: any = null;
+			let minDist = Infinity;
+			for (const enemy of candidates) {
+				if (!enemy?.position) continue;
+				const cx = enemy.position.x + (enemy.width || 0) / 2;
+				const cy = enemy.position.y + (enemy.height || 0) / 2;
+				const dx = cx - position.x;
+				const dy = cy - position.y;
+				const d = dx * dx + dy * dy;
+				if (d < minDist) {
+					minDist = d;
+					target = enemy;
 				}
-			});
+			}
 
-			if (enemies.length > 0) {
+			if (target && target.state && typeof target.state.setState === 'function') {
+				target.state.setState('Die');
 				this.collectedLoot -= toSpend;
 			}
 			this.emitChange();

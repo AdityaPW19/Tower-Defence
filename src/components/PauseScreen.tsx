@@ -3,6 +3,7 @@ import MenuLayout from './MenuLayout';
 import Button from './Button';
 import { soundManager } from '../stores/soundManager';
 import { game } from '../stores/game';
+import { resolvePath } from '../utils/paths';
 
 interface PauseScreenProps {
 	onResume: () => void;
@@ -57,6 +58,13 @@ const PauseScreen: React.FC<PauseScreenProps> = ({ onResume, onRestart }) => {
 				<div className="pause-content">
 					<div className="pause-title">
 						<h1>Paused</h1>
+					</div>
+					<div className="pause-art-container">
+						<img
+							src={resolvePath('/enemies/enemies-planning.png')}
+							alt="Enemies Planning"
+							className="pause-art"
+						/>
 					</div>
 					<div className="buttons-container">
 						<Button text="Resume Game" onClick={onResume} />

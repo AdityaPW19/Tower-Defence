@@ -91,7 +91,18 @@ const QuestionOverlay: React.FC = () => {
 
 	if (!isActive || !currentQuestion) return null;
 
-	const timerColor = progress < 30 ? '#ff3333' : '#d685da';
+	const isDangerTime = progress < 30;
+	const timerBackground = isDangerTime
+		? '#ff3333'
+		: 'linear-gradient(90deg, #d685da 0%, #ff7a3d 100%)';
+	const timerShadowColor = isDangerTime ? '#ff3333' : '#ff7a3d';
+	const qm = managers.get('questionManager');
+	const secondsRemaining = qm && qm.timer > 0 ? Math.ceil(qm.timer / 1000) : 0;
+
+	const hintText: string = typeof currentQuestion.hint === 'string' ? currentQuestion.hint.trim() : '';
+	const hasHintText = hintText.length > 0 && hintText.toLowerCase() !== 'none';
+	const hasHintImage = !!currentQuestion.hintImage;
+	const hasHint = hasHintText || hasHintImage;
 
 	return (
 		<div className="question-overlay">
@@ -117,22 +128,36 @@ const QuestionOverlay: React.FC = () => {
 				<div className="question-hud">
 					<div className="question-content">
 						<div className="question-header">
-							<h2 className="question-title">Incoming Transmission</h2>
-							<div className="timer-container">
-								<div 
-									className="timer-bar" 
-									style={{ 
-										width: `${progress}%`,
-										background: timerColor,
-										boxShadow: `0 0 10px ${timerColor}`,
-										transition: 'width 0.4s cubic-bezier(0.33, 1, 0.68, 1)'
-									}} 
-								/>
+							<div className="question-title-pill">
+								<h2 className="question-title">- Incoming Transmission -</h2>
+							</div>
+							<div className="timer-row">
+								<span className="timer-label">
+									<span className="timer-bullet" />
+									Time Transmission
+								</span>
+								<div className="timer-container">
+									<div
+										className="timer-bar"
+										style={{
+											width: `${progress}%`,
+											background: timerBackground,
+											boxShadow: `0 0 10px ${timerShadowColor}`,
+											transition: 'width 0.4s cubic-bezier(0.33, 1, 0.68, 1)'
+										}}
+									/>
+								</div>
+								<span className="timer-seconds">{secondsRemaining}s</span>
 							</div>
 						</div>
 
 						<div className="question-scroll-area">
 							<div className="question-box">
+								<span className="question-corner question-corner-tl" />
+								<span className="question-corner question-corner-tr" />
+								<span className="question-corner question-corner-bl" />
+								<span className="question-corner question-corner-br" />
+
 								{currentQuestion.question && (
 									<p className="question-text">{currentQuestion.question}</p>
 								)}
@@ -142,35 +167,40 @@ const QuestionOverlay: React.FC = () => {
 										<img src={currentQuestion.image} alt="Question" className="question-img" />
 									</div>
 								)}
-
-								{currentQuestion.meta && (
-									<div className="meta-tag">
-										<span className="meta-label">Subject:</span> {currentQuestion.meta.subject || 'Unknown'}
-										<span className="meta-separator">|</span>
-										<span className="meta-label">Level:</span> {currentQuestion.meta.level || '1'}
-									</div>
-								)}
-
-								{(currentQuestion.hint || currentQuestion.hintImage) && (
-									<div className="hint-section">
-										<button className="hint-toggle-btn" onClick={toggleHint}>
-											<span className="hint-icon">?</span>
-											{showHint ? 'Hide Data Fragment' : 'Decrypt Data Fragment (Hint)'}
-										</button>
-										
-										{showHint && (
-											<div className="hint-content">
-												{currentQuestion.hint && <p className="hint-text">{currentQuestion.hint}</p>}
-												{currentQuestion.hintImage && (
-													<div className="hint-image-container">
-														<img src={currentQuestion.hintImage} alt="Hint" className="hint-img" />
-													</div>
-												)}
-											</div>
-										)}
-									</div>
-								)}
 							</div>
+
+							{currentQuestion.meta && (
+								<div className="meta-tags">
+									<div className="meta-tag meta-tag-level">
+										<span className="meta-label">Level:</span>
+										<span className="meta-value">{currentQuestion.meta.level || '1'}</span>
+									</div>
+									<div className="meta-tag meta-tag-category">
+										<span className="meta-label">Category:</span>
+										<span className="meta-value">{currentQuestion.meta.subject || 'Unknown'}</span>
+									</div>
+								</div>
+							)}
+
+							{hasHint && (
+								<div className="hint-section">
+									<button className="hint-toggle-btn" onClick={toggleHint}>
+										<span className="hint-icon">?</span>
+										{showHint ? 'Hide Data Fragment' : 'Decrypt Data Fragment (Hint)'}
+									</button>
+
+									{showHint && (
+										<div className="hint-content">
+											{hasHintText && <p className="hint-text">{hintText}</p>}
+											{hasHintImage && (
+												<div className="hint-image-container">
+													<img src={currentQuestion.hintImage} alt="Hint" className="hint-img" />
+												</div>
+											)}
+										</div>
+									)}
+								</div>
+							)}
 
 							<div className={`options-grid ${currentQuestion.options?.some((o: any) => o.image) ? 'has-images' : ''}`}>
 								{currentQuestion.options?.map((option: any, index: number) => (
@@ -180,6 +210,7 @@ const QuestionOverlay: React.FC = () => {
 										onClick={() => handleAnswer(index)}
 										style={{ cursor: cursor.get('arrow') }}
 									>
+										<span className="option-bullet" />
 										<div className="option-content">
 											{option.image && <img src={option.image} alt={`Option ${index + 1}`} className="option-img" />}
 											{option.text && <span className="btn-text">{option.text}</span>}
@@ -190,6 +221,16 @@ const QuestionOverlay: React.FC = () => {
 						</div>
 
 						<div className="question-footer">
+							<div className="footer-warning">
+								<span className="warning-icon" aria-hidden="true">
+									<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+										<path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+										<line x1="12" y1="9" x2="12" y2="13" />
+										<line x1="12" y1="17" x2="12.01" y2="17" />
+									</svg>
+								</span>
+								<span className="warning-text">3 strikes = tower lost</span>
+							</div>
 							<div className="status-indicator">
 								<span className="status-label">Strikes</span>
 								<div className="strikes-container">
