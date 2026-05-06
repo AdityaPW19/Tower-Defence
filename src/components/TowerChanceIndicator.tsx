@@ -101,7 +101,8 @@ const TowerChanceIndicator: React.FC = () => {
 					</div>
 				</div>
 
-				{points > 0 && (
+				{/* Replaced by <BuildPoints /> in the top-left HUD. Kept for reference. */}
+				{/* {points > 0 && (
 					<div className={`points-badge has-points`}>
 						<div className="badge-content">
 							<span className="icon">🛠️</span>
@@ -113,7 +114,7 @@ const TowerChanceIndicator: React.FC = () => {
 						</div>
 						{pointAnim && <div className="floating-text">+1 BP</div>}
 					</div>
-				)}
+				)} */}
 			</div>
 		</>
 	);

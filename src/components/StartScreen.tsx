@@ -6,11 +6,12 @@ import { resolvePath } from '../utils/paths';
 
 interface StartScreenProps {
 	onStart: () => void;
+	onOpenTutorial?: () => void;
 	preloaded: boolean;
 	preloadPercent: number;
 }
 
-const StartScreen: React.FC<StartScreenProps> = ({ onStart, preloaded, preloadPercent }) => {
+const StartScreen: React.FC<StartScreenProps> = ({ onStart, onOpenTutorial, preloaded, preloadPercent }) => {
 	const [showHowToPlay, setShowHowToPlay] = useState(false);
 
 	const text = preloaded ? 'Start game' : `${preloadPercent}%`;
@@ -34,7 +35,13 @@ const StartScreen: React.FC<StartScreenProps> = ({ onStart, preloaded, preloadPe
 				<div className="buttons-container">
 					<Button disabled={!preloaded} text={text} onClick={onStart} />
 					<div style={{ height: 10 }} />
-					<Button text="How to Play" onClick={() => setShowHowToPlay(true)} />
+					<Button text="Quick Guide" onClick={() => setShowHowToPlay(true)} />
+					{onOpenTutorial && (
+						<>
+							<div style={{ height: 10 }} />
+							<Button text="Tutorial" onClick={onOpenTutorial} />
+						</>
+					)}
 				</div>
 			</div>
 

@@ -13,9 +13,12 @@ import PauseScreen from './components/PauseScreen';
 import WinLoseScreen from './components/WinLoseScreen';
 import BackgroundContainer from './components/BackgroundContainer';
 import Loot from './components/Loot';
+import BuildPoints from './components/BuildPoints';
 import TowerChanceIndicator from './components/TowerChanceIndicator';
 import Pause from './components/Pause';
 import VisualFeedback from './components/VisualFeedback';
+import Tutorial from './components/tutorial/Tutorial';
+import { getTutorialSeen, setTutorialSeen } from './utils/tutorialStorage';
 import './styles.css';
 
 export default function App() {
@@ -25,6 +28,8 @@ export default function App() {
 	const [stageNumber, setStageNumber] = useState(0);
 	const [isQuestionActive, setIsQuestionActive] = useState(false);
 	const [preloaded, setPreloaded] = useState(false);
+	const [showTutorial, setShowTutorial] = useState(false);
+	const [pendingAutoStart, setPendingAutoStart] = useState(false);
 
 	useEffect(() => {
 		const handleResize = () => {
@@ -121,8 +126,27 @@ export default function App() {
 	}, []);
 
 	const handleStart = useCallback(async () => {
+		if (!getTutorialSeen()) {
+			setPendingAutoStart(true);
+			setShowTutorial(true);
+			return;
+		}
 		await game.start();
 	}, []);
+
+	const handleOpenTutorial = useCallback(() => {
+		setPendingAutoStart(false);
+		setShowTutorial(true);
+	}, []);
+
+	const handleTutorialComplete = useCallback(async () => {
+		setTutorialSeen(true);
+		setShowTutorial(false);
+		if (pendingAutoStart) {
+			setPendingAutoStart(false);
+			await game.start();
+		}
+	}, [pendingAutoStart]);
 
 	const handleRestart = useCallback(() => {
 		game.restart();
@@ -133,8 +157,19 @@ export default function App() {
 		gameLoop?.resume();
 	}, []);
 
+	if (showTutorial) {
+		return <Tutorial onComplete={handleTutorialComplete} />;
+	}
+
 	if (!isStarted) {
-		return <StartScreen onStart={handleStart} preloaded={preloaded} preloadPercent={soundManager.preloadPercent} />;
+		return (
+			<StartScreen
+				onStart={handleStart}
+				onOpenTutorial={handleOpenTutorial}
+				preloaded={preloaded}
+				preloadPercent={soundManager.preloadPercent}
+			/>
+		);
 	}
 
 	if (stageResult) {
@@ -157,6 +192,7 @@ export default function App() {
 						<div className="wrapper">
 							<BackgroundContainer stageNumber={stageNumber} />
 							<Loot />
+							<BuildPoints />
 							<TowerChanceIndicator />
 							<button className="btn-pause" onClick={handlePauseClick}>
 								<Pause />

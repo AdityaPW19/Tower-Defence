@@ -14,7 +14,7 @@ const BlinkingStar: React.FC<BlinkingStarProps> = ({ x, y }) => {
 	}, []);
 
 	return (
-		<div 
+		<div
 			className="blinking-star-container"
 			style={{ left: `${x}%`, top: `${y}%` }}
 		>
